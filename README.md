@@ -1,14 +1,8 @@
-# etc_jupyterlab_telemetry_extension
+# etc_jupyterlab_telemetry_extension_extension
 
-![Github Actions Status](https://github.com/educational-technology-collective/etc_jupyterlab_telemetry_extension/workflows/Build/badge.svg)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/educational-technology-collective/etc_jupyterlab_telemetry_extension/main?urlpath=lab)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/educational-technology-collective/etc_jupyterlab_telemetry_extension_extension/main?urlpath=lab)
 
-A JupyterLab extension.
-
-
-This extension is composed of a Python package named `etc_jupyterlab_telemetry_extension`
-for the server extension and a NPM package named `@educational-technology-collective/etc_jupyterlab_telemetry_extension`
-for the frontend extension.
-
+A JupyterLab Telemetry extension.
 
 ## Requirements
 
@@ -16,12 +10,53 @@ for the frontend extension.
 
 ## Install
 
-To install the extension, execute:
+To install the extension:
+
+Install the Python build package (https://pypi.org/project/build/).
 
 ```bash
-pip install etc_jupyterlab_telemetry_extension
+pip install build
 ```
 
+Clone to repository.
+
+```bash
+git clone https://github.com/educational-technology-collective/etc_jupyterlab_telemetry_extension.git
+```
+
+or,
+
+```bash
+git clone git@github.com:educational-technology-collective/etc_jupyterlab_telemetry_extension.git
+```
+
+Change the directory into the repository.
+
+```bash
+cd etc_jupyterlab_telemetry_extension
+```
+
+**The following instructions assume that your current working directory is the base directory of the repository.**
+
+Next build the extension according to the instructions given in the [documentation](https://jupyterlab.readthedocs.io/en/stable/extension/extension_tutorial.html#packaging-your-extension).  The instructions are summarized below:
+
+Create a wheel (.whl) package in the `dist` directory.
+
+```bash
+python -m build
+```
+
+Install the wheel package; this will install the extension.
+
+```bash
+pip install ./dist/etc_jupyterlab_telemetry_extension-*-py3-none-any.whl
+```
+
+Start Jupyter Lab.
+
+```bash
+jupyter lab
+```
 ## Uninstall
 
 To remove the extension, execute:
