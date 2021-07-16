@@ -26,9 +26,7 @@ import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 
 const PLUGIN_ID = '@educational-technology-collective/etc_jupyterlab_telemetry_extension:plugin'
 
-export const INotebookEvent = new Token<INotebookEvent>(
-  PLUGIN_ID
-);
+export const INotebookEvent = new Token<INotebookEvent>(PLUGIN_ID);
 
 export interface INotebookEvent {
   notebookSaved: Signal<SignalMuxer, any>;
