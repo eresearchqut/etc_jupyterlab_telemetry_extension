@@ -78,7 +78,13 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
       });
 
       notebookSaveEvent.notebookSaved.connect((sender: NotebookSaveEvent, args: any) => { signalMuxer.notebookSaved.emit.call(sender, args) });
-    
+      
+      notebookSaveEvent.notebookSaved.connect((sender: NotebookSaveEvent, args: any) => {
+        signalMuxer.notebookSaved.emit({ ...{ "source": "wo call" }, ...args })
+      });
+
+      notebookSaveEvent.notebookSaved.connect((sender: NotebookSaveEvent, args: any) => { console.log("From extension: ", args) });
+      
     });
 
     return signalMuxer;
