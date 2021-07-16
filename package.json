@@ -1,6 +1,6 @@
 {
   "name": "@educational-technology-collective/etc_jupyterlab_telemetry_extension",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A JupyterLab extension.",
   "keywords": [
     "jupyter",
@@ -85,8 +85,8 @@
     "sharedPackages": {
       "@educational-technology-collective/etc_jupyterlab_telemetry_extension": {
         "singleton": true
-       }
-     },
+      }
+    },
     "discovery": {
       "server": {
         "managers": [
