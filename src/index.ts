@@ -30,7 +30,7 @@ export const INotebookEvent = new Token<INotebookEvent>(
   PLUGIN_ID
 );
 
-interface INotebookEvent {
+export interface INotebookEvent {
   notebookSaved: Signal<SignalMuxer, any>;
 }
 
