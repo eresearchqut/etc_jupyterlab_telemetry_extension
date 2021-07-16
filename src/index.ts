@@ -34,7 +34,6 @@ interface INotebookEvent {
   notebookSaved: Signal<SignalMuxer, any>;
 }
 
-
 class SignalMuxer implements INotebookEvent {
 
   public notebookSaved = new Signal<SignalMuxer, any>(this);
