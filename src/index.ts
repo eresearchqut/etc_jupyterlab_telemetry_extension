@@ -86,7 +86,6 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
         notebookPanel: notebookPanel,
         settings
       });
-      
       notebookSaveEvent.notebookSaved.connect((sender: NotebookSaveEvent, args: any) => {
         signalMuxer.notebookSaved.emit(args);
       });

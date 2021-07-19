@@ -1,9 +1,10 @@
-# etc_jupyterlab_telemetry_extension_extension
+# ETC JupyterLab Telemetry Extension
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/educational-technology-collective/etc_jupyterlab_telemetry_extension_extension/main?urlpath=lab)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/educational-technology-collective/etc_jupyterlab_telemetry_extension/main?urlpath=lab)
 
-A JupyterLab Telemetry extension.
+This extension 
 
+provides a service 
 ## Requirements
 
 * JupyterLab >= 3.0

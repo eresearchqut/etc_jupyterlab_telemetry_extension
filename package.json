@@ -82,11 +82,6 @@
   ],
   "styleModule": "style/index.js",
   "jupyterlab": {
-    "sharedPackages": {
-      "@educational-technology-collective/etc_jupyterlab_telemetry_extension": {
-        "singleton": true
-      }
-    },
     "discovery": {
       "server": {
         "managers": [

@@ -124,7 +124,7 @@ export class NotebookState {
             if (this._cellState.get(cell)?.changed === false) {
                 //  The cell has not changed; hence, the notebook format cell will contain just its id.
 
-                (nbFormatNotebook.cells[index] as any) = { id: nbFormatNotebook.cells[index].id };
+                (nbFormatNotebook.cells[index] as any) = { id: this._notebook.widgets[index].model.id };
             }
         }
 
