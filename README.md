@@ -2,9 +2,267 @@
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/educational-technology-collective/etc_jupyterlab_telemetry_extension/main?urlpath=lab)
 
-This extension 
+This extension provides a JupyterLab service named INotebookEvent that emits events associated with user actions in the Notebook.  The INotebookEvent Token represents a service that can be consumed by a JupyterLab plugin similar to core services: [Core Tokens](https://jupyterlab.readthedocs.io/en/stable/extension/extension_points.html#core-tokens).  See the [Usage](#usage) section for instructions on how to consume the service.  
 
-provides a service 
+The following events are emitted by the service:
+
+* Active Cell Changed
+* Cell Added
+* Cell Executed
+* Cell Removed
+* Notebook Opened
+* Notebook Saved
+* Notebook Scrolled
+
+Each of these events is exposed as a Signal on the INotebookEvent object.  The consumer plugin can attach a handler to the Signals in order to log event messages.
+
+## Events
+
+Each event message will contain a list of cells relevant to each event.  See the [Relevant Cells](#relevant-cells) section for details.  Each event will also contain a JSON representation of the Notebook in its present state.  The notebook JSON object contains a list of notebook cell objects.  A notebook cell object will contain only the cell id if the cell content or output hasn't changed since the last event.
+
+The rationale for recording only the cell id when the cell contents have not change sense a prior message is that it saves storage space.  This approach allows for messages to be reconstructed at a later time by using the cell contents contained in previously logged messages i.e., the cell IDs are used in order to obtain the contents of the cell from a previously logged cell.
+
+Please note that in order to reconstruct messages all *enabled* events must be logged.
+
+## Event Message Schema
+
+Each event message conforms to the following JSON schema.
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "event_name": {
+      "type": "string"
+    },
+    "cells": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "index": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "id",
+            "index"
+          ]
+        }
+      ]
+    },
+    "notebook": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "kernelspec": {
+              "type": "object",
+              "properties": {
+                "display_name": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "display_name",
+                "language",
+                "name"
+              ]
+            },
+            "language_info": {
+              "type": "object",
+              "properties": {
+                "codemirror_mode": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "version"
+                  ]
+                },
+                "file_extension": {
+                  "type": "string"
+                },
+                "mimetype": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "nbconvert_exporter": {
+                  "type": "string"
+                },
+                "pygments_lexer": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "codemirror_mode",
+                "file_extension",
+                "mimetype",
+                "name",
+                "nbconvert_exporter",
+                "pygments_lexer",
+                "version"
+              ]
+            }
+          },
+          "required": [
+            "kernelspec",
+            "language_info"
+          ]
+        },
+        "nbformat_minor": {
+          "type": "integer"
+        },
+        "nbformat": {
+          "type": "integer"
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cell_type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "trusted": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "trusted"
+                ]
+              },
+              "execution_count": {
+                "type": "null"
+              },
+              "outputs": {
+                "type": "array",
+                "items": {}
+              },
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+
+              "id"
+            ]
+          }
+        }
+      },
+      "required": [
+        "metadata",
+        "nbformat_minor",
+        "nbformat",
+        "cells"
+      ]
+    },
+    "seq": {
+      "type": "integer"
+    },
+    "notebook_path": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_name",
+    "cells",
+    "notebook",
+    "seq",
+    "notebook_path",
+    "user_id"
+  ]
+}
+```
+
+## Relevant Cells
+
+For each event the top level `cells` property in the logged message will contain the cells relevant to the event.
+
+* Active Cell Changed
+  * The cell list contains the ID of the active cell. 
+* Cell Added
+  * The cell list contains the IDs of the added cells.
+* Cell Executed
+  * The cell list contains the ID of the executed cell.
+* Cell Removed
+  * The cell list contains the IDs of the removed cells.
+* Notebook Opened
+  * The cell list contains the IDs of all the cells in the notebook.
+* Notebook Saved
+  * The cell list contains the IDs of all the cells in the notebook.
+* Notebook Scrolled
+  * The cell list contains the IDs of the cells that are visible to the user.
+
+## Usage
+
+Install the extension according to the installation instructions.  
+
+Once the extension is installed a plugin can consume the service by including it in its `requires` list.  
+
+In the following example, the `consumer` plugin consumes the Token provided by the INotebookEvent extension.  The Signals exposed by the INotebookEvent service are then connected to the `console.log` method, which will log the events to the console.
+
+The Signals can be connected to any handler that you choose.  The content of the messages can be filtered according to your needs.
+
+```js
+
+import {
+  JupyterFrontEnd,
+  JupyterFrontEndPlugin
+} from '@jupyterlab/application';
+
+import { INotebookEvent } from "@educational-technology-collective/etc_jupyterlab_telemetry_extension";
+
+const plugin: JupyterFrontEndPlugin<void> = {
+  id: "the-id-of-the-plugin",
+  autoStart: true,
+  requires: [INotebookEvent],
+  activate: (app: JupyterFrontEnd, notebookEvent: INotebookEvent) => {
+
+    notebookEvent.notebookSaved.connect((sender: any, args: any) => console.log(args));
+    notebookEvent.activeCellChanged.connect((sender: any, args: any) => console.log(args));
+    notebookEvent.cellAdded.connect((sender: any, args: any) => console.log(args));
+    notebookEvent.cellExecuted.connect((sender: any, args: any) => console.log(args));
+    notebookEvent.cellRemoved.connect((sender: any, args: any) => console.log(args));
+    notebookEvent.notebookOpened.connect((sender: any, args: any) => console.log(args));
+    notebookEvent.notebookScrolled.connect((sender: any, args: any) => console.log(args));
+  }
+};
+```
+
 ## Requirements
 
 * JupyterLab >= 3.0
