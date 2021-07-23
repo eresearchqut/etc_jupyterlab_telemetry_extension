@@ -72,7 +72,7 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
     let response = requestAPI<object>("config");
 
     notebookTracker.widgetAdded.connect(async (sender: INotebookTracker, notebookPanel: NotebookPanel) => {
-
+      
       await notebookPanel.revealed;
       await notebookPanel.sessionContext.ready;
       let config = await response;

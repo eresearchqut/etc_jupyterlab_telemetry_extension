@@ -4,6 +4,7 @@ from jupyter_server.extension.handler import ExtensionHandlerMixin
 from jupyter_server.utils import url_path_join
 import tornado
 import json
+import os 
 
 class ConfigRouteHandler(ExtensionHandlerMixin, JupyterHandler):
 
@@ -13,8 +14,8 @@ class ConfigRouteHandler(ExtensionHandlerMixin, JupyterHandler):
         print('ConfigRouteHandler#config', self.config)
         print('ConfigRouteHandler#server_config', self.server_config)
         print('ConfigRouteHandler#name', self.name)
-        self.finish(json.dumps(self.server_config['etc_jupyterlab_telemetry_extension']))
-
+        config = self.server_config['etc_jupyterlab_telemetry_extension'] if 'etc_jupyterlab_telemetry_extension' in self.server_config else {}
+        self.finish(json.dumps(config))
 
 class ETCJupyterLabTelemetryExtension(ExtensionApp):
 

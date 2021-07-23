@@ -25,6 +25,8 @@ export abstract class ConfigSupplicant {
             }
 
         } catch (e) {
+            setTimeout(this.enable);
+            this._state = true;
             console.error(e);
         }
     }
