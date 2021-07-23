@@ -3,8 +3,6 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
-import { ISettingRegistry } from '@jupyterlab/settingregistry';
-
 import { Signal } from '@lumino/signaling';
 
 import { Token } from '@lumino/coreutils';
@@ -20,7 +18,10 @@ import {
   CellAddEvent,
   CellRemoveEvent
 } from "./events";
+
 import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
+
+import { requestAPI } from "./handler";
 
 const PLUGIN_ID = '@educational-technology-collective/etc_jupyterlab_telemetry_extension:plugin'
 
@@ -57,34 +58,31 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
   autoStart: true,
   provides: INotebookEvent,
   requires: [
-    INotebookTracker,
-    ISettingRegistry
+    INotebookTracker
   ],
   activate: async (
     app: JupyterFrontEnd,
-    notebookTracker: INotebookTracker,
-    settingRegistry: ISettingRegistry
+    notebookTracker: INotebookTracker
   ): Promise<INotebookEvent> => {
 
     console.log('JupyterLab extension @educational-technology-collective/etc_jupyterlab_telemetry_extension is activated!');
 
     let signalMuxer = new SignalMuxer();
 
-    let settings: ISettingRegistry.ISettings;
-
-    settings = await settingRegistry.load(PLUGIN_ID); // in order to get settings.
+    let response = requestAPI<object>("config");
 
     notebookTracker.widgetAdded.connect(async (sender: INotebookTracker, notebookPanel: NotebookPanel) => {
 
       await notebookPanel.revealed;
       await notebookPanel.sessionContext.ready;
+      let config = await response;
 
       let notebookState = new NotebookState({ notebookPanel: notebookPanel });
 
       let notebookSaveEvent = new NotebookSaveEvent({
         notebookState: notebookState,
         notebookPanel: notebookPanel,
-        settings
+        config: config
       });
       notebookSaveEvent.notebookSaved.connect((sender: NotebookSaveEvent, args: any) => {
         signalMuxer.notebookSaved.emit(args);
@@ -93,7 +91,7 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
       let cellExecutionEvent = new CellExecutionEvent({
         notebookState: notebookState,
         notebookPanel: notebookPanel,
-        settings
+        config: config
       });
       cellExecutionEvent.cellExecuted.connect((sender: CellExecutionEvent, args: any) => {
         signalMuxer.cellExecuted.emit(args);
@@ -102,7 +100,7 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
       let notebookScrollEvent = new NotebookScrollEvent({
         notebookState: notebookState,
         notebookPanel: notebookPanel,
-        settings
+        config: config
       });
       notebookScrollEvent.notebookScrolled.connect((sender: NotebookScrollEvent, args: any) => {
         signalMuxer.notebookScrolled.emit(args);
@@ -111,7 +109,7 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
       let activeCellChangeEvent = new ActiveCellChangeEvent({
         notebookState: notebookState,
         notebookPanel: notebookPanel,
-        settings
+        config: config
       });
       activeCellChangeEvent.activeCellChanged.connect((sender: ActiveCellChangeEvent, args: any) => {
         signalMuxer.activeCellChanged.emit(args);
@@ -120,7 +118,7 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
       let notebookOpenEvent = new NotebookOpenEvent({
         notebookState: notebookState,
         notebookPanel: notebookPanel,
-        settings
+        config: config
       });
       notebookOpenEvent.notebookOpened.connect((sender: NotebookOpenEvent, args: any) => {
         signalMuxer.notebookOpened.emit(args);
@@ -129,7 +127,7 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
       let cellAddEvent = new CellAddEvent({
         notebookState: notebookState,
         notebookPanel: notebookPanel,
-        settings
+        config: config
       });
       cellAddEvent.cellAdded.connect((sender: CellAddEvent, args: any) => {
         signalMuxer.cellAdded.emit(args);
@@ -138,12 +136,23 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
       let cellRemoveEvent = new CellRemoveEvent({
         notebookState: notebookState,
         notebookPanel: notebookPanel,
-        settings
+        config: config
       });
       cellRemoveEvent.cellRemoved.connect((sender: CellRemoveEvent, args: any) => {
         signalMuxer.cellRemoved.emit(args);
-      });      
+      });
     });
+
+
+    //// TEST
+    signalMuxer.activeCellChanged.connect((sender: SignalMuxer, args: any) => console.log(args));
+    signalMuxer.cellAdded.connect((sender: SignalMuxer, args: any) => console.log(args));
+    signalMuxer.cellExecuted.connect((sender: SignalMuxer, args: any) => console.log(args));
+    signalMuxer.cellRemoved.connect((sender: SignalMuxer, args: any) => console.log(args));
+    signalMuxer.notebookOpened.connect((sender: SignalMuxer, args: any) => console.log(args));
+    signalMuxer.notebookSaved.connect((sender: SignalMuxer, args: any) => console.log(args));
+    signalMuxer.notebookScrolled.connect((sender: SignalMuxer, args: any) => console.log(args));
+    //// TEST
 
     return signalMuxer;
   }

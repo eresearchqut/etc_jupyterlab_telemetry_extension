@@ -22,8 +22,7 @@ import {
 } from "@jupyterlab/docregistry";
 
 import { NotebookState } from "./notebook_state"
-import { ISettingRegistry } from "@jupyterlab/settingregistry";
-import { SettingsSupplicant } from "./settings_supplicant";
+import { ConfigSupplicant } from "./config_supplicant";
 
 export interface ICellMeta {
     index: number;
@@ -33,22 +32,19 @@ export interface ICellMeta {
 interface INotebookEventOptions {
     notebookState: NotebookState;
     notebookPanel: NotebookPanel;
-    settings: ISettingRegistry.ISettings;
+    config: object;
 }
 
-
-
-export class NotebookSaveEvent extends SettingsSupplicant {
+export class NotebookSaveEvent extends ConfigSupplicant {
 
     private _notebookSaved: Signal<NotebookSaveEvent, any> = new Signal(this);
     private _notebookPanel: NotebookPanel;
     private _notebookState: NotebookState;
 
-    constructor({ notebookState, notebookPanel, settings}: INotebookEventOptions) {
+    constructor({ notebookState, notebookPanel, config }: INotebookEventOptions) {
         super({
-            settings,
-            key: "event",
-            URN: "mentoracademy.org/schemas/events/1.0.0/NotebookSaveEvent"
+            paths: ["mentoracademy.org/schemas/events/1.0.0/NotebookSaveEvent", "enable"],
+            config
         });
 
         this._notebookState = notebookState;
@@ -109,7 +105,7 @@ export class NotebookSaveEvent extends SettingsSupplicant {
     }
 }
 
-export class CellExecutionEvent extends SettingsSupplicant {
+export class CellExecutionEvent extends ConfigSupplicant {
 
     private _cellExecuted: Signal<CellExecutionEvent, any> = new Signal(this);
     private _notebookPanel: NotebookPanel;
@@ -117,11 +113,10 @@ export class CellExecutionEvent extends SettingsSupplicant {
     private _notebookState: NotebookState;
 
 
-    constructor({ notebookState, notebookPanel, settings}: INotebookEventOptions) {
+    constructor({ notebookState, notebookPanel, config }: INotebookEventOptions) {
         super({
-            settings,
-            key: "event",
-            URN: "mentoracademy.org/schemas/events/1.0.0/CellExecutionEvent"
+            paths: ["mentoracademy.org/schemas/events/1.0.0/CellExecutionEvent", "enable"],
+            config
         });
 
         this._notebookState = notebookState;
@@ -172,7 +167,7 @@ export class CellExecutionEvent extends SettingsSupplicant {
 }
 
 
-export class NotebookScrollEvent extends SettingsSupplicant {
+export class NotebookScrollEvent extends ConfigSupplicant {
 
     private _notebookScrolled: Signal<NotebookScrollEvent, any> = new Signal(this);
     private _notebookPanel: NotebookPanel;
@@ -181,11 +176,10 @@ export class NotebookScrollEvent extends SettingsSupplicant {
 
     private _timeout: number;
 
-    constructor({ notebookState, notebookPanel, settings}: INotebookEventOptions) {
+    constructor({ notebookState, notebookPanel, config }: INotebookEventOptions) {
         super({
-            settings,
-            key: "event",
-            URN: "mentoracademy.org/schemas/events/1.0.0/NotebookScrollEvent"
+            paths: ["mentoracademy.org/schemas/events/1.0.0/NotebookScrollEvent", "enable"],
+            config
         });
 
         this._notebookState = notebookState;
@@ -259,7 +253,7 @@ export class NotebookScrollEvent extends SettingsSupplicant {
     }
 }
 
-export class ActiveCellChangeEvent extends SettingsSupplicant {
+export class ActiveCellChangeEvent extends ConfigSupplicant {
 
     private _activeCellChanged: Signal<ActiveCellChangeEvent, any> = new Signal(this);
     private _notebookPanel: NotebookPanel;
@@ -267,11 +261,10 @@ export class ActiveCellChangeEvent extends SettingsSupplicant {
     private _notebookState: NotebookState;
 
 
-    constructor({ notebookState, notebookPanel, settings}: INotebookEventOptions) {
+    constructor({ notebookState, notebookPanel, config }: INotebookEventOptions) {
         super({
-            settings,
-            key: "event",
-            URN: "mentoracademy.org/schemas/events/1.0.0/ActiveCellChangeEvent"
+            paths: ["mentoracademy.org/schemas/events/1.0.0/ActiveCellChangeEvent", "enable"],
+            config
         });
 
         this._notebookState = notebookState;
@@ -318,7 +311,7 @@ export class ActiveCellChangeEvent extends SettingsSupplicant {
     }
 }
 
-export class NotebookOpenEvent extends SettingsSupplicant {
+export class NotebookOpenEvent extends ConfigSupplicant {
 
     private _notebookOpened: Signal<NotebookOpenEvent, any> = new Signal(this);
     private _notebookPanel: NotebookPanel;
@@ -327,11 +320,10 @@ export class NotebookOpenEvent extends SettingsSupplicant {
     private _enable: boolean;
 
 
-    constructor({ notebookState, notebookPanel, settings}: INotebookEventOptions) {
+    constructor({ notebookState, notebookPanel, config }: INotebookEventOptions) {
         super({
-            settings,
-            key: "event",
-            URN: "mentoracademy.org/schemas/events/1.0.0/NotebookOpenEvent"
+            paths: ["mentoracademy.org/schemas/events/1.0.0/NotebookOpenEvent", "enable"],
+            config
         });
 
         this._notebookState = notebookState;
@@ -382,7 +374,7 @@ export class NotebookOpenEvent extends SettingsSupplicant {
     }
 }
 
-export class CellAddEvent extends SettingsSupplicant {
+export class CellAddEvent extends ConfigSupplicant {
 
     private _cellAdded: Signal<CellAddEvent, any> = new Signal(this);
     private _notebookPanel: NotebookPanel;
@@ -390,11 +382,10 @@ export class CellAddEvent extends SettingsSupplicant {
     private _notebookState: NotebookState;
 
 
-    constructor({ notebookState, notebookPanel, settings}: INotebookEventOptions) {
+    constructor({ notebookState, notebookPanel, config }: INotebookEventOptions) {
         super({
-            settings,
-            key: "event",
-            URN: "mentoracademy.org/schemas/events/1.0.0/CellAddEvent"
+            paths: ["mentoracademy.org/schemas/events/1.0.0/CellAddEvent", "enable"],
+            config
         });
 
         this._notebookState = notebookState;
@@ -442,7 +433,7 @@ export class CellAddEvent extends SettingsSupplicant {
 }
 
 
-export class CellRemoveEvent extends SettingsSupplicant {
+export class CellRemoveEvent extends ConfigSupplicant {
 
     private _cellRemoved: Signal<CellRemoveEvent, any> = new Signal(this);
     private _notebookPanel: NotebookPanel;
@@ -450,11 +441,10 @@ export class CellRemoveEvent extends SettingsSupplicant {
     private _notebookState: NotebookState;
 
 
-    constructor({ notebookState, notebookPanel, settings}: INotebookEventOptions) {
+    constructor({ notebookState, notebookPanel, config }: INotebookEventOptions) {
         super({
-            settings,
-            key: "event",
-            URN: "mentoracademy.org/schemas/events/1.0.0/CellRemoveEvent"
+            paths: ["mentoracademy.org/schemas/events/1.0.0/CellRemoveEvent", "enable"],
+            config
         });
 
         this._notebookState = notebookState;
