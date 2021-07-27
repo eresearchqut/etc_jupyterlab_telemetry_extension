@@ -2,7 +2,7 @@
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/educational-technology-collective/etc_jupyterlab_telemetry_extension/main?urlpath=lab)
 
-This extension provides a JupyterLab service named INotebookEvent that emits events associated with user actions in the Notebook.  The INotebookEvent Token represents a service that can be consumed by a JupyterLab plugin similar to core services: [Core Tokens](https://jupyterlab.readthedocs.io/en/stable/extension/extension_points.html#core-tokens).  See the [Usage](#usage) section for instructions on how to consume the service.  
+This extension provides a JupyterLab service named INotebookEvent that emits events associated with user actions in the Notebook.  The INotebookEvent Token represents a service that can be consumed by a JupyterLab plugin similar to core services: [Core Tokens](https://jupyterlab.readthedocs.io/en/stable/extension/extension_points.html#core-tokens).  See the [Usage](#usage) section for instructions on how to consume the service.
 
 The following events are emitted by the service:
 
@@ -271,34 +271,39 @@ The configuration file must be placed in a directory where the Jupyter Server ca
 
 The configuration file may be placed in any of the Jupyter Server configuration directories.  Execute `jupyter --paths` in order to get a list of configuration directories.  The configuration file must be named `jupyter_etc_jupyterlab_telemetry_extension_config.json` in order for Jupyter Server to associate it with the extension.
 
-This is an example of a JSON configuration file:
+This is an example of a valid JSON configuration file:
 ```json
 {
-    "etc_jupyterlab_telemetry_extension": {
-        "mentoracademy.org/schemas/events/1.0.0/NotebookSaveEvent": {
-            "enable": true
-        },
-        "mentoracademy.org/schemas/events/1.0.0/NotebookOpenEvent": {
-            "enable": true
-        },
-        "mentoracademy.org/schemas/events/1.0.0/CellRemoveEvent": {
-            "enable": true
-        },
-        "mentoracademy.org/schemas/events/1.0.0/CellAddEvent": {
-            "enable": true
-        },
-        "mentoracademy.org/schemas/events/1.0.0/CellExecutionEvent": {
-            "enable": true
-        },
-        "mentoracademy.org/schemas/events/1.0.0/NotebookScrollEvent": {
-            "enable": true
-        },
-        "mentoracademy.org/schemas/events/1.0.0/ActiveCellChangeEvent": {
-            "enable": true
+    "ETCJupyterLabTelemetryExtension": {
+        "etc_jupyterlab_telemetry_extension": {
+            "mentoracademy.org/schemas/events/1.0.0/NotebookSaveEvent": {
+                "enable": true
+            },
+            "mentoracademy.org/schemas/events/1.0.0/NotebookOpenEvent": {
+                "enable": true
+            },
+            "mentoracademy.org/schemas/events/1.0.0/CellRemoveEvent": {
+                "enable": true
+            },
+            "mentoracademy.org/schemas/events/1.0.0/CellAddEvent": {
+                "enable": true
+            },
+            "mentoracademy.org/schemas/events/1.0.0/CellExecutionEvent": {
+                "enable": true
+            },
+            "mentoracademy.org/schemas/events/1.0.0/NotebookScrollEvent": {
+                "enable": true
+            },
+            "mentoracademy.org/schemas/events/1.0.0/ActiveCellChangeEvent": {
+                "enable": true
+            }
         }
     }
 }
 ```
+
+An event can be disabled by setting its `enable` property to `false`.  The change will take effect next time you start JupyterLab.
+
 ## Requirements
 
 * JupyterLab >= 3.0

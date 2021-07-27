@@ -4,17 +4,18 @@ from jupyter_server.extension.handler import ExtensionHandlerMixin
 from jupyter_server.utils import url_path_join
 import tornado
 import json
-import os 
+
+from traitlets.traitlets import Bool, Dict, Integer, Unicode 
 
 class ConfigRouteHandler(ExtensionHandlerMixin, JupyterHandler):
 
     @tornado.web.authenticated
     def get(self):
-        print('ConfigRouteHandler#settings', self.settings)
-        print('ConfigRouteHandler#config', self.config)
-        print('ConfigRouteHandler#server_config', self.server_config)
-        print('ConfigRouteHandler#name', self.name)
-        config = self.server_config['etc_jupyterlab_telemetry_extension'] if 'etc_jupyterlab_telemetry_extension' in self.server_config else {}
+        # print('ConfigRouteHandler#settings', self.settings)
+        # print('ConfigRouteHandler#config', self.config)
+        # print('ConfigRouteHandler#server_config', self.server_config)
+        # print('ConfigRouteHandler#name', self.name)
+        config = self.config['etc_jupyterlab_telemetry_extension'] if 'etc_jupyterlab_telemetry_extension' in self.config else {}
         self.finish(json.dumps(config))
 
 class ETCJupyterLabTelemetryExtension(ExtensionApp):
@@ -34,6 +35,8 @@ class ETCJupyterLabTelemetryExtension(ExtensionApp):
     # ----------- add custom traits below ---------
     # ...
 
+    etc_jupyterlab_telemetry_extension = Dict(value_trait=Dict(value_trait=Bool(), key_trait=Unicode()), key_trait=Unicode()).tag(config=True)
+
     def initialize_settings(self):
         pass
         # Update the self.settings trait to pass extra
@@ -42,7 +45,6 @@ class ETCJupyterLabTelemetryExtension(ExtensionApp):
 
     def initialize_handlers(self):
         # Extend the self.handlers trait
-        print('ETCJupyterLabTelemetryExtension#settings.etc_jupyterlab_telemetry_extension_config', self.settings["etc_jupyterlab_telemetry_extension_config"])
         base_url = self.settings["base_url"]
         route_pattern = url_path_join(base_url, "etc-jupyterlab-telemetry-extension", "config")
         handlers = [(route_pattern, ConfigRouteHandler)]
