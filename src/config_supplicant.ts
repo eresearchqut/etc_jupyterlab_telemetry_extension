@@ -27,7 +27,7 @@ export abstract class ConfigSupplicant {
         } catch (e) {
             setTimeout(this.enable);
             this._state = true;
-            console.error(e);
+            //  The default is for all events to be enabled; hence, we don't need to log anything here.
         }
     }
 

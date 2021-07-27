@@ -145,13 +145,13 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
 
 
     //// TEST
-    signalMuxer.activeCellChanged.connect((sender: SignalMuxer, args: any) => console.log(args));
-    signalMuxer.cellAdded.connect((sender: SignalMuxer, args: any) => console.log(args));
-    signalMuxer.cellExecuted.connect((sender: SignalMuxer, args: any) => console.log(args));
-    signalMuxer.cellRemoved.connect((sender: SignalMuxer, args: any) => console.log(args));
-    signalMuxer.notebookOpened.connect((sender: SignalMuxer, args: any) => console.log(args));
-    signalMuxer.notebookSaved.connect((sender: SignalMuxer, args: any) => console.log(args));
-    signalMuxer.notebookScrolled.connect((sender: SignalMuxer, args: any) => console.log(args));
+    // signalMuxer.activeCellChanged.connect((sender: SignalMuxer, args: any) => console.log(args));
+    // signalMuxer.cellAdded.connect((sender: SignalMuxer, args: any) => console.log(args));
+    // signalMuxer.cellExecuted.connect((sender: SignalMuxer, args: any) => console.log(args));
+    // signalMuxer.cellRemoved.connect((sender: SignalMuxer, args: any) => console.log(args));
+    // signalMuxer.notebookOpened.connect((sender: SignalMuxer, args: any) => console.log(args));
+    // signalMuxer.notebookSaved.connect((sender: SignalMuxer, args: any) => console.log(args));
+    // signalMuxer.notebookScrolled.connect((sender: SignalMuxer, args: any) => console.log(args));
     //// TEST
 
     return signalMuxer;

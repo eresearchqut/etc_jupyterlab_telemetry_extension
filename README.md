@@ -20,7 +20,7 @@ Each of these events is exposed as a Signal on the INotebookEvent object.  The c
 
 Each event message will contain a list of cells relevant to each event.  See the [Relevant Cells](#relevant-cells) section for details.  Each event will also contain a JSON representation of the Notebook in its present state.  The notebook JSON object contains a list of notebook cell objects.  A notebook cell object will contain only the cell id if the cell content or output hasn't changed since the last event.
 
-The rationale for recording only the cell id when the cell contents have not change sense a prior message is that it saves storage space.  This approach allows for messages to be reconstructed at a later time by using the cell contents contained in previously logged messages i.e., the cell IDs are used in order to obtain the contents of the cell from a previously logged cell.
+The rationale for recording only the cell id when the cell contents have not changed sense a prior message is that it saves storage space.  This approach allows for messages to be reconstructed at a later time by using the cell contents contained in previously logged messages i.e., the cell IDs are used in order to obtain the contents of the cell from a previously logged cell.
 
 Please note that in order to reconstruct messages all *enabled* events must be logged.
 
@@ -263,6 +263,42 @@ const plugin: JupyterFrontEndPlugin<void> = {
 };
 ```
 
+## Configuration
+
+When the extension is installed all of the events are enabled by default.  However, you can disable and enable specific events by providing a configuration file.
+
+The configuration file must be placed in a directory where the Jupyter Server can find it and it must be named according to [convention](https://jupyter-server.readthedocs.io/en/latest/operators/configuring-extensions.html).
+
+The configuration file may be placed in any of the Jupyter Server configuration directories.  Execute `jupyter --paths` in order to get a list of configuration directories.  The configuration file must be named `jupyter_etc_jupyterlab_telemetry_extension_config.json` in order for Jupyter Server to associate it with the extension.
+
+This is an example of a JSON configuration file:
+```json
+{
+    "etc_jupyterlab_telemetry_extension": {
+        "mentoracademy.org/schemas/events/1.0.0/NotebookSaveEvent": {
+            "enable": true
+        },
+        "mentoracademy.org/schemas/events/1.0.0/NotebookOpenEvent": {
+            "enable": true
+        },
+        "mentoracademy.org/schemas/events/1.0.0/CellRemoveEvent": {
+            "enable": true
+        },
+        "mentoracademy.org/schemas/events/1.0.0/CellAddEvent": {
+            "enable": true
+        },
+        "mentoracademy.org/schemas/events/1.0.0/CellExecutionEvent": {
+            "enable": true
+        },
+        "mentoracademy.org/schemas/events/1.0.0/NotebookScrollEvent": {
+            "enable": true
+        },
+        "mentoracademy.org/schemas/events/1.0.0/ActiveCellChangeEvent": {
+            "enable": true
+        }
+    }
+}
+```
 ## Requirements
 
 * JupyterLab >= 3.0
