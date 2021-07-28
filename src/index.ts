@@ -144,15 +144,15 @@ const plugin: JupyterFrontEndPlugin<INotebookEvent> = {
     });
 
 
-    // TEST
-    // signalMuxer.activeCellChanged.connect((sender: SignalMuxer, args: any) => console.log(args));
-    // signalMuxer.cellAdded.connect((sender: SignalMuxer, args: any) => console.log(args));
-    // signalMuxer.cellExecuted.connect((sender: SignalMuxer, args: any) => console.log(args));
-    // signalMuxer.cellRemoved.connect((sender: SignalMuxer, args: any) => console.log(args));
-    // signalMuxer.notebookOpened.connect((sender: SignalMuxer, args: any) => console.log(args));
-    // signalMuxer.notebookSaved.connect((sender: SignalMuxer, args: any) => console.log(args));
-    // signalMuxer.notebookScrolled.connect((sender: SignalMuxer, args: any) => console.log(args));
-    // TEST
+    // // TEST
+    // signalMuxer.activeCellChanged.connect((sender: SignalMuxer, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
+    // signalMuxer.cellAdded.connect((sender: SignalMuxer, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
+    // signalMuxer.cellExecuted.connect((sender: SignalMuxer, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
+    // signalMuxer.cellRemoved.connect((sender: SignalMuxer, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
+    // signalMuxer.notebookOpened.connect((sender: SignalMuxer, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
+    // signalMuxer.notebookSaved.connect((sender: SignalMuxer, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
+    // signalMuxer.notebookScrolled.connect((sender: SignalMuxer, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
+    // // TEST
 
     return signalMuxer;
   }

@@ -66,7 +66,7 @@ export class NotebookSaveEvent extends ConfigSupplicant {
         let cells: Array<ICellMeta>;
         let index: number;
 
-        if (saveState == "completed") {
+        if (saveState.match("completed")) {
 
             cells = [];
 
