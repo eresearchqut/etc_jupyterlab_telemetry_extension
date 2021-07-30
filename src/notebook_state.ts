@@ -39,7 +39,7 @@ export class NotebookState {
             args: IObservableList.IChangedArgs<ICellModel>
         ) => {
 
-            if (args.type == "add") {
+            if (args.type == "add" || args.type == "set") {
 
                 this.updateCellState();
                 //  A cell was added; hence, update the cell state.
@@ -121,20 +121,30 @@ export class NotebookState {
 
             let cell: Cell<ICellModel> = this._notebook.widgets[index];
 
-            if (this._cellState.get(cell)?.changed === false) {
+            let cellState = this._cellState.get(cell);
+
+            if (cellState === undefined) {
+                throw new Error(`The cell at index ${index} is not tracked.`);
+            }
+
+            if (cellState?.changed === false) {
                 //  The cell has not changed; hence, the notebook format cell will contain just its id.
 
                 (nbFormatNotebook.cells[index] as any) = { id: this._notebook.widgets[index].model.id };
             }
         }
 
-        this._notebook.widgets.forEach((cell: Cell<ICellModel>) => {
+        for (let index = 0; index < this._notebook.widgets.length; index++) {
+            let cell: Cell<ICellModel> = this._notebook.widgets[index];
             let cellState = this._cellState.get(cell);
             if (cellState !== undefined) {
-                cellState.changed = false;
-                //  The cell state has been captured; hence, set all states to not changed.
+            cellState.changed = false;
             }
-        });
+            //  The cell state is going to be captured; hence, set the state to not changed.
+
+            //  We need to be certain that all the cells were processed prior to making any changes to their state;
+            //  hence, this operation is done in a loop separate from the loop above.
+        }
 
         let state = {
             notebook: nbFormatNotebook,
@@ -142,6 +152,11 @@ export class NotebookState {
         }
 
         this._seq = this._seq + 1;
+        //  We've made changes to the state at this point; 
+        //  hence, it's really important that nothing throws between now and recording the message.
+
+        //  We need all the messages in order to reconstruct the Notebook at each event;
+        //  hence, we need all the messages in order to reconstruct the Notebook at each event. :-)
 
         return state;
     }
