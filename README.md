@@ -233,7 +233,7 @@ Install the extension according to the installation instructions.
 
 Once the extension is installed a plugin can consume the service by including it in its `requires` list.  
 
-In the following example, the `consumer` plugin consumes the Token provided by the INotebookEvent extension.  The Signals exposed by the INotebookEvent service are then connected to the `console.log` method, which will log the events to the console.
+The extension provides a service identified by the INotebookEvent token.  In the following example, the `consumer` plugin consumes the Token provided by the etc_jupyterlab_telemetry_extension extension.  The Signals exposed by the INotebookEvent service are then connected to the `console.log` method, which will log the events to the console.
 
 The Signals can be connected to any handler that you choose.  The content of the messages can be filtered according to your needs.
 
@@ -304,6 +304,10 @@ This is an example of a valid JSON configuration file:
 
 An event can be disabled by setting its `enable` property to `false`.  The change will take effect next time you start JupyterLab.
 
+## Example
+
+The [ETC JupyterLab Telemetry Example](https://github.com/educational-technology-collective/etc_jupyterlab_telemetry_example) repository demostrates how to consume this extension and hook up its events to a console.log handler.
+
 ## Requirements
 
 * JupyterLab >= 3.0
@@ -312,51 +316,10 @@ An event can be disabled by setting its `enable` property to `false`.  The chang
 
 To install the extension:
 
-Install the Python build package (https://pypi.org/project/build/).
-
 ```bash
-pip install build
+pip install etc_jupyterlab_telemetry_extension
 ```
 
-Clone to repository.
-
-```bash
-git clone https://github.com/educational-technology-collective/etc_jupyterlab_telemetry_extension.git
-```
-
-or,
-
-```bash
-git clone git@github.com:educational-technology-collective/etc_jupyterlab_telemetry_extension.git
-```
-
-Change the directory into the repository.
-
-```bash
-cd etc_jupyterlab_telemetry_extension
-```
-
-**The following instructions assume that your current working directory is the base directory of the repository.**
-
-Next build the extension according to the instructions given in the [documentation](https://jupyterlab.readthedocs.io/en/stable/extension/extension_tutorial.html#packaging-your-extension).  The instructions are summarized below:
-
-Create a wheel (.whl) package in the `dist` directory.
-
-```bash
-python -m build
-```
-
-Install the wheel package; this will install the extension.
-
-```bash
-pip install ./dist/etc_jupyterlab_telemetry_extension-*-py3-none-any.whl
-```
-
-Start Jupyter Lab.
-
-```bash
-jupyter lab
-```
 ## Uninstall
 
 To remove the extension, execute:
@@ -364,7 +327,6 @@ To remove the extension, execute:
 ```bash
 pip uninstall etc_jupyterlab_telemetry_extension
 ```
-
 
 ## Troubleshoot
 
