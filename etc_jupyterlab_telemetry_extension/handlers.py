@@ -7,18 +7,24 @@ import os, json, concurrent, tornado
 from jupyter_core.paths import jupyter_config_path
 from pathlib import Path
 
-def get_config():
-
+def get_extension_name():
     try: 
         HERE = Path(__file__).parent.resolve()
 
         with (HERE / "labextension" / "package.json").open() as fid:
             data = json.load(fid)
-
-        CONFIG_FILE_NAME = data['jupyterlab']['discovery']['server']['base']['name'] + '.json'
+        extension_name = data['jupyterlab']['discovery']['server']['base']['name']
     except:
         raise Exception('The extension failed to obtain a base extension name in package.json. \
             The base extension name should be at jupyterlab.discovery.server.base.name in package.json.')
+    
+    return extension_name
+
+EXTENSION_NAME = get_extension_name()
+
+def get_config(server_app):
+
+    config_file_name = EXTENSION_NAME + '.json'
 
     config = None
 
@@ -26,7 +32,7 @@ def get_config():
     config_dirs.reverse()
     for config_dir in config_dirs:
 
-        path = os.path.join(config_dir, CONFIG_FILE_NAME)
+        path = os.path.join(config_dir, config_file_name)
 
         if os.path.isfile(path):
             with open(path) as f:
@@ -34,31 +40,30 @@ def get_config():
             break
 
     if not config:
-        raise Exception('The ' + CONFIG_FILE_NAME + ' configuration file is missing in one of: ' + ', '.join(config_dirs))
+        server_app.log.info('The ' + config_file_name + ' configuration file is missing in one of: ' + ', '.join(config_dirs))
 
     return config
-
-CONFIG = get_config()
 
 class RouteHandler(APIHandler):
 
     executor = concurrent.futures.ThreadPoolExecutor(5)
 
     def __init__(self, *args, **kwargs):
+        self.extension_config = kwargs.pop(EXTENSION_NAME)
         super().__init__(*args, **kwargs)
-    
+
     # The following decorator should be present on all verb methods (head, get, post,
     # patch, put, delete, options) to ensure only authorized user can request the
     # Jupyter server
     @tornado.web.authenticated
     def get(self, resource):
-        print('GET')
+
         try:
             if resource == 'config':
-                    if CONFIG:
-                        self.finish(json.dumps(CONFIG))
+                    if self.extension_config:
+                        self.finish(json.dumps(self.extension_config))
                     else:
-                        self.set_status(404)
+                       self.set_status(404)
             else:
                 self.set_status(404)
 
@@ -66,10 +71,11 @@ class RouteHandler(APIHandler):
             self.set_status(500)
             self.finish(json.dumps(str(e)))
 
-def setup_handlers(web_app):
+def setup_handlers(server_app):
     host_pattern = ".*$"
 
-    base_url = web_app.settings["base_url"]
+    base_url = server_app.web_app.settings["base_url"]
     route_pattern = url_path_join(base_url, "etc-jupyterlab-telemetry-extension", "(.*)")
-    handlers = [(route_pattern, RouteHandler)]
-    web_app.add_handlers(host_pattern, handlers)
+    extension_config = get_config(server_app)
+    handlers = [(route_pattern, RouteHandler, { EXTENSION_NAME : extension_config })]
+    server_app.web_app.add_handlers(host_pattern, handlers)

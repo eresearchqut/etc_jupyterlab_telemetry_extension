@@ -37,7 +37,7 @@ export const IETCJupyterLabTelemetry = new Token<IETCJupyterLabTelemetry>(PLUGIN
 
 export class NotebookEventLibrary {
 
-  static _config: object;
+  static _config: object | null;
 
   public notebookOpenEvent: NotebookOpenEvent;
   public notebookSaveEvent: NotebookSaveEvent;
@@ -118,7 +118,14 @@ const plugin: JupyterFrontEndPlugin<IETCJupyterLabTelemetry> = {
 
     console.log('JupyterLab extension @educational-technology-collective/etc_jupyterlab_telemetry_extension is activated!');
 
-    let config = await requestAPI<object>("config");
+    let config = null;
+
+    try {
+       config = await requestAPI<object>("config");
+    }
+    catch(e){
+      console.error(e);
+    }
 
     NotebookEventLibrary._config = config;
 
@@ -126,6 +133,7 @@ const plugin: JupyterFrontEndPlugin<IETCJupyterLabTelemetry> = {
       NotebookEventLibrary: NotebookEventLibrary
     }
 
+    // // TEST
     // notebookTracker.widgetAdded.connect(async (sender: INotebookTracker, notebookPanel: NotebookPanel) => {
 
     //   await notebookPanel.revealed;
@@ -141,6 +149,7 @@ const plugin: JupyterFrontEndPlugin<IETCJupyterLabTelemetry> = {
     //   notebookEvent.notebookScrollEvent.notebookScrolled.connect((sender: NotebookScrollEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
     //   notebookEvent.cellExecutionEvent.cellExecuted.connect((sender: CellExecutionEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
     // });
+    // // TEST
 
     return etcJupyterLabTelemetry;
   }

@@ -32,7 +32,7 @@ export interface ICellMeta {
 interface INotebookEventOptions {
     notebookState: NotebookState;
     notebookPanel: NotebookPanel;
-    config: object;
+    config: object | null;
 }
 
 export class NotebookSaveEvent extends ConfigSupplicant {

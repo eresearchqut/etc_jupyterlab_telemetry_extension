@@ -2,9 +2,9 @@
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/educational-technology-collective/etc_jupyterlab_telemetry_extension/main?urlpath=lab)
 
-This extension provides a JupyterLab service named INotebookEvent that emits events associated with user actions in the Notebook.  The INotebookEvent Token represents a service that can be consumed by a JupyterLab plugin similar to core services: [Core Tokens](https://jupyterlab.readthedocs.io/en/stable/extension/extension_points.html#core-tokens).  See the [Usage](#usage) section for instructions on how to consume the service.
+This extension provides a JupyterLab service named IETCJupyterLabTelemetry that exposes a NotebookEventLibrary that has events that emit Signals associated with user actions in the Notebook.  The IETCJupyterLabTelemetry Token represents a service that can be consumed by a JupyterLab plugin similar to core services: [Core Tokens](https://jupyterlab.readthedocs.io/en/stable/extension/extension_points.html#core-tokens).  See the [Usage](#usage) section for instructions on how to consume the service.
 
-The following events are emitted by the service:
+The following events are emitted by the events in the NotebookEventLibrary:
 
 * Active Cell Changed
 * Cell Added
@@ -14,7 +14,7 @@ The following events are emitted by the service:
 * Notebook Saved
 * Notebook Scrolled
 
-Each of these events is exposed as a Signal on the INotebookEvent object.  The consumer plugin can attach a handler to the Signals in order to log event messages.
+Each of these events is exposed as a Signal on the an event of an instance of the NotebookEventLibrary.  The consumer plugin can attach a handler to the Signal in order to log the event message.
 
 ## Events
 
@@ -233,32 +233,52 @@ Install the extension according to the installation instructions.
 
 Once the extension is installed a plugin can consume the service by including it in its `requires` list.  
 
-The extension provides a service identified by the INotebookEvent token.  In the following example, the `consumer` plugin consumes the Token provided by the etc_jupyterlab_telemetry_extension extension.  The Signals exposed by the INotebookEvent service are then connected to the `console.log` method, which will log the events to the console.
+The extension provides a service identified by the IETCJupyterLabTelemetry token.  In the following example, the `consumer` plugin consumes the Token provided by the etc_jupyterlab_telemetry_extension extension.  The NotebookEventLibrary exposed by the IETCJupyterLabTelemetry service is then instantiated with a NotebookPanel.  The Signals of the events in the new NotebookEventLibrary are then connected to the `console.log` method, which will log the events to the console.
 
 The Signals can be connected to any handler that you choose.  The content of the messages can be filtered according to your needs.
 
 ```js
+import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 
 import {
-  JupyterFrontEnd,
-  JupyterFrontEndPlugin
-} from '@jupyterlab/application';
+  IETCJupyterLabTelemetry,
+  NotebookSaveEvent,
+  CellExecutionEvent,
+  NotebookScrollEvent,
+  ActiveCellChangeEvent,
+  NotebookOpenEvent,
+  CellAddEvent,
+  CellRemoveEvent
+} from "@educational-technology-collective/etc_jupyterlab_telemetry_extension";
 
-import { INotebookEvent } from "@educational-technology-collective/etc_jupyterlab_telemetry_extension";
+PLUGIN_ID = "the_name_of_the_plugin"
 
 const plugin: JupyterFrontEndPlugin<void> = {
-  id: "the-id-of-the-plugin",
+  id: PLUGIN_ID,
   autoStart: true,
-  requires: [INotebookEvent],
-  activate: (app: JupyterFrontEnd, notebookEvent: INotebookEvent) => {
+  requires: [INotebookTracker, IETCJupyterLabTelemetry],
+  activate: (
+    app: JupyterFrontEnd, 
+    notebookTracker: INotebookTracker, 
+    etcJupyterLabTelemetry: IETCJupyterLabTelemetry
+    ) => {
 
-    notebookEvent.notebookSaved.connect((sender: any, args: any) => console.log(args));
-    notebookEvent.activeCellChanged.connect((sender: any, args: any) => console.log(args));
-    notebookEvent.cellAdded.connect((sender: any, args: any) => console.log(args));
-    notebookEvent.cellExecuted.connect((sender: any, args: any) => console.log(args));
-    notebookEvent.cellRemoved.connect((sender: any, args: any) => console.log(args));
-    notebookEvent.notebookOpened.connect((sender: any, args: any) => console.log(args));
-    notebookEvent.notebookScrolled.connect((sender: any, args: any) => console.log(args));
+    notebookTracker.widgetAdded.connect(async (sender: INotebookTracker, notebookPanel: NotebookPanel) => {
+
+      await notebookPanel.revealed;
+      await notebookPanel.sessionContext.ready;
+
+      let notebookEventLibrary = new etcJupyterLabTelemetry.NotebookEventLibrary({ notebookPanel });
+
+      notebookEventLibrary.notebookOpenEvent.notebookOpened.connect((sender: NotebookOpenEvent, args: any) => console.log(args));
+      notebookEventLibrary.notebookSaveEvent.notebookSaved.connect((sender: NotebookSaveEvent, args: any) => console.log(args));
+      notebookEventLibrary.activeCellChangeEvent.activeCellChanged.connect((sender: ActiveCellChangeEvent, args: any) => console.log(args));
+      notebookEventLibrary.cellAddEvent.cellAdded.connect((sender: CellAddEvent, args: any) => console.log(args));
+      notebookEventLibrary.cellRemoveEvent.cellRemoved.connect((sender: CellRemoveEvent, args: any) => console.log(args));
+      notebookEventLibrary.notebookScrollEvent.notebookScrolled.connect((sender: NotebookScrollEvent, args: any) => console.log(args));
+      notebookEventLibrary.cellExecutionEvent.cellExecuted.connect((sender: CellExecutionEvent, args: any) => console.log(args));
+    });
+
   }
 };
 ```
