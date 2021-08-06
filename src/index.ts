@@ -110,9 +110,7 @@ const plugin: JupyterFrontEndPlugin<IETCJupyterLabTelemetry> = {
   id: PLUGIN_ID,
   autoStart: true,
   provides: IETCJupyterLabTelemetry,
-  requires: [
-    INotebookTracker
-  ],
+  requires: [INotebookTracker],
   activate: async (
     app: JupyterFrontEnd,
     notebookTracker: INotebookTracker
