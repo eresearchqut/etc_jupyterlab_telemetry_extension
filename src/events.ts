@@ -92,11 +92,11 @@ export class NotebookSaveEvent extends ConfigSupplicant {
         }
     }
 
-    protected enable(): void {
+    public enable(): void {
         this._notebookPanel.context.saveState.connect(this.event, this);
     }
 
-    protected disable(): void {
+    public disable(): void {
         this._notebookPanel.context.saveState.disconnect(this.event, this);
     }
 
@@ -153,11 +153,11 @@ export class CellExecutionEvent extends ConfigSupplicant {
         }
     }
 
-    protected enable(): void {
+    public enable(): void {
         NotebookActions.executed.connect(this.event, this);
     }
 
-    protected disable(): void {
+    public disable(): void {
         NotebookActions.executed.disconnect(this.event, this);
     }
 
@@ -240,11 +240,11 @@ export class NotebookScrollEvent extends ConfigSupplicant {
         }, 1000);
     }
 
-    protected enable(): void {
+    public enable(): void {
         this._notebook.node.addEventListener("scroll", this.event, false);
     }
 
-    protected disable(): void {
+    public disable(): void {
         this._notebook.node.removeEventListener("scroll", this.event, false);
     }
 
@@ -298,11 +298,11 @@ export class ActiveCellChangeEvent extends ConfigSupplicant {
         });
     }
 
-    protected enable(): void {
+    public enable(): void {
         this._notebook.activeCellChanged.connect(this.event, this);
     }
 
-    protected disable(): void {
+    public disable(): void {
         this._notebook.activeCellChanged.disconnect(this.event, this);
     }
 
@@ -361,11 +361,11 @@ export class NotebookOpenEvent extends ConfigSupplicant {
         });
     }
 
-    protected enable(): void {
+    public enable(): void {
         this._enable = true;
     }
 
-    protected disable(): void {
+    public disable(): void {
         this._enable = false;
     }
 
@@ -419,11 +419,11 @@ export class CellAddEvent extends ConfigSupplicant {
         }
     }
 
-    protected enable(): void {
+    public enable(): void {
         this._notebook.model?.cells.changed.connect(this.event, this);
     }
 
-    protected disable(): void {
+    public disable(): void {
         this._notebook.model?.cells.changed.disconnect(this.event, this);
     }
 
@@ -479,11 +479,11 @@ export class CellRemoveEvent extends ConfigSupplicant {
         }
     }
 
-    protected enable(): void {
+    public enable(): void {
         this._notebook.model?.cells.changed.connect(this.event, this);
     }
 
-    protected disable(): void {
+    public disable(): void {
         this._notebook.model?.cells.changed.disconnect(this.event, this);
     }
 

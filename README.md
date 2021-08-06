@@ -267,38 +267,32 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
 When the extension is installed all of the events are enabled by default.  However, you can disable and enable specific events by providing a configuration file.
 
-The configuration file must be placed in a directory where the Jupyter Server can find it and it must be named according to [convention](https://jupyter-server.readthedocs.io/en/latest/operators/configuring-extensions.html).
-
-The configuration file may be placed in any of the Jupyter Server configuration directories.  Execute `jupyter --paths` in order to get a list of configuration directories.  The configuration file must be named `jupyter_etc_jupyterlab_telemetry_extension_config.json` in order for Jupyter Server to associate it with the extension.
+The configuration file may be placed in any of the Jupyter Server configuration directories.  Execute `jupyter --paths` in order to get a list of configuration directories.  The configuration file must be named `etc_jupyterlab_telemetry_extension.json` in order for Jupyter Server to associate it with the extension.
 
 This is an example of a valid JSON configuration file:
 ```json
 {
-    "ETCJupyterLabTelemetryExtension": {
-        "etc_jupyterlab_telemetry_extension": {
-            "mentoracademy.org/schemas/events/1.0.0/NotebookSaveEvent": {
-                "enable": true
-            },
-            "mentoracademy.org/schemas/events/1.0.0/NotebookOpenEvent": {
-                "enable": true
-            },
-            "mentoracademy.org/schemas/events/1.0.0/CellRemoveEvent": {
-                "enable": true
-            },
-            "mentoracademy.org/schemas/events/1.0.0/CellAddEvent": {
-                "enable": true
-            },
-            "mentoracademy.org/schemas/events/1.0.0/CellExecutionEvent": {
-                "enable": true
-            },
-            "mentoracademy.org/schemas/events/1.0.0/NotebookScrollEvent": {
-                "enable": true
-            },
-            "mentoracademy.org/schemas/events/1.0.0/ActiveCellChangeEvent": {
-                "enable": true
-            }
-        }
-    }
+  "mentoracademy.org/schemas/events/1.0.0/NotebookSaveEvent": {
+      "enable": true
+  },
+  "mentoracademy.org/schemas/events/1.0.0/NotebookOpenEvent": {
+      "enable": true
+  },
+  "mentoracademy.org/schemas/events/1.0.0/CellRemoveEvent": {
+      "enable": true
+  },
+  "mentoracademy.org/schemas/events/1.0.0/CellAddEvent": {
+      "enable": true
+  },
+  "mentoracademy.org/schemas/events/1.0.0/CellExecutionEvent": {
+      "enable": true
+  },
+  "mentoracademy.org/schemas/events/1.0.0/NotebookScrollEvent": {
+      "enable": true
+  },
+  "mentoracademy.org/schemas/events/1.0.0/ActiveCellChangeEvent": {
+      "enable": true
+  }
 }
 ```
 
