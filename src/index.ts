@@ -17,6 +17,16 @@ import {
   CellRemoveEvent
 } from "./events";
 
+export {
+  NotebookSaveEvent,
+  CellExecutionEvent,
+  NotebookScrollEvent,
+  ActiveCellChangeEvent,
+  NotebookOpenEvent,
+  CellAddEvent,
+  CellRemoveEvent
+} from "./events";
+
 import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 
 import { requestAPI } from "./handler";
