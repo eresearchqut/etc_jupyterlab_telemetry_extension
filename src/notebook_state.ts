@@ -19,17 +19,21 @@ import { IOutputAreaModel } from "@jupyterlab/outputarea";
 
 import { INotebookContent } from "@jupyterlab/nbformat";
 
+import { UUID } from "@lumino/coreutils";
+
 export class NotebookState {
 
     private _notebook: Notebook;
     private _cellState: WeakMap<Cell<ICellModel>, { changed: boolean, output: string }>;
     private _seq: number;
+    private _session_id: string;
 
     constructor({ notebookPanel }: { notebookPanel: NotebookPanel }) {
 
         this._notebook = notebookPanel.content;
         this._cellState = new WeakMap<Cell<ICellModel>, { changed: boolean, output: string }>();
         this._seq = 0;
+        this._session_id = UUID.uuid4();
 
         this.updateCellState();
         //  The notebook loaded; hence, update the cell state.
@@ -113,7 +117,7 @@ export class NotebookState {
         return "";
     }
 
-    getNotebookState(): { notebook: INotebookContent, seq: number } {
+    getNotebookState(): { session_id: string, seq: number, notebook: INotebookContent } {
 
         let nbFormatNotebook = (this._notebook.model?.toJSON() as INotebookContent);
 
@@ -138,7 +142,7 @@ export class NotebookState {
             let cell: Cell<ICellModel> = this._notebook.widgets[index];
             let cellState = this._cellState.get(cell);
             if (cellState !== undefined) {
-            cellState.changed = false;
+                cellState.changed = false;
             }
             //  The cell state is going to be captured; hence, set the state to not changed.
 
@@ -147,8 +151,9 @@ export class NotebookState {
         }
 
         let state = {
-            notebook: nbFormatNotebook,
-            seq: this._seq
+            session_id: this._session_id,
+            seq: this._seq,
+            notebook: nbFormatNotebook
         }
 
         this._seq = this._seq + 1;

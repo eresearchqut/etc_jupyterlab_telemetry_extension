@@ -86,6 +86,7 @@ export class NotebookSaveEvent extends ConfigSupplicant {
                 event_name: "save_notebook",
                 cells: cells,
                 notebook: notebookState.notebook,
+                session_id: notebookState.session_id,
                 seq: notebookState.seq,
                 notebook_path: this._notebookPanel.context.path
             });
@@ -147,6 +148,7 @@ export class CellExecutionEvent extends ConfigSupplicant {
                 event_name: "cell_executed",
                 cells: cells,
                 notebook: notebookState.notebook,
+                session_id: notebookState.session_id,
                 seq: notebookState.seq,
                 notebook_path: this._notebookPanel.context.path
             });
@@ -233,6 +235,7 @@ export class NotebookScrollEvent extends ConfigSupplicant {
                 event_name: "scroll",
                 cells: cells,
                 notebook: notebookState.notebook,
+                session_id: notebookState.session_id,
                 seq: notebookState.seq,
                 notebook_path: this._notebookPanel.context.path
             });
@@ -293,6 +296,7 @@ export class ActiveCellChangeEvent extends ConfigSupplicant {
             event_name: "active_cell_changed",
             cells: cells,
             notebook: notebookState.notebook,
+            session_id: notebookState.session_id,
             seq: notebookState.seq,
             notebook_path: this._notebookPanel.context.path
         });
@@ -356,6 +360,7 @@ export class NotebookOpenEvent extends ConfigSupplicant {
             event_name: "open_notebook",
             cells: cells,
             notebook: notebookState.notebook,
+            session_id: notebookState.session_id,
             seq: notebookState.seq,
             notebook_path: this._notebookPanel.context.path
         });
@@ -413,6 +418,7 @@ export class CellAddEvent extends ConfigSupplicant {
                 event_name: "add_cell",
                 cells: cells,
                 notebook: notebookState.notebook,
+                session_id: notebookState.session_id,
                 seq: notebookState.seq,
                 notebook_path: this._notebookPanel.context.path
             });
@@ -473,6 +479,7 @@ export class CellRemoveEvent extends ConfigSupplicant {
                 event_name: "remove_cell",
                 cells: cells,
                 notebook: notebookState.notebook,
+                session_id: notebookState.session_id,
                 seq: notebookState.seq,
                 notebook_path: this._notebookPanel.context.path
             });
