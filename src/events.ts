@@ -131,7 +131,7 @@ export class CellExecutionEvent extends ConfigSupplicant {
         Signal.disconnectAll(this);
     }
 
-    event(_: any, args: { notebook: Notebook; cell: Cell<ICellModel> }): void {
+    private event(_: any, args: { notebook: Notebook; cell: Cell<ICellModel> }): void {
 
         if (args.notebook.model === this._notebook.model) {
 
@@ -198,7 +198,7 @@ export class NotebookScrollEvent extends ConfigSupplicant {
         Signal.disconnectAll(this);
     }
 
-    event(e: Event): void {
+    private event(e: Event): void {
 
         e.stopPropagation();
 
@@ -281,7 +281,7 @@ export class ActiveCellChangeEvent extends ConfigSupplicant {
         Signal.disconnectAll(this);
     }
 
-    event(send: Notebook, args: Cell<ICellModel>): void {
+    private event(send: Notebook, args: Cell<ICellModel>): void {
 
         let cells = [
             {
@@ -344,7 +344,7 @@ export class NotebookOpenEvent extends ConfigSupplicant {
         Signal.disconnectAll(this);
     }
 
-    event(): void {
+    private event(): void {
 
         if (!this._enable) {
             return;
@@ -404,7 +404,7 @@ export class CellAddEvent extends ConfigSupplicant {
         Signal.disconnectAll(this);
     }
 
-    event(
+    private event(
         sender: IObservableUndoableList<ICellModel>,
         args: IObservableList.IChangedArgs<ICellModel>) {
 
@@ -465,7 +465,7 @@ export class CellRemoveEvent extends ConfigSupplicant {
         Signal.disconnectAll(this);
     }
 
-    event(
+    private event(
         sender: IObservableUndoableList<ICellModel>,
         args: IObservableList.IChangedArgs<ICellModel>) {
 

@@ -95,12 +95,12 @@ export class NotebookEventLibrary {
   }
 }
 
-interface INotebookEventLibraryConstrcutor {
+interface INotebookEventLibraryConstructor {
   new({ notebookPanel }: { notebookPanel: NotebookPanel }): NotebookEventLibrary
 }
 
 export interface IETCJupyterLabTelemetry {
-  NotebookEventLibrary: INotebookEventLibraryConstrcutor
+  NotebookEventLibrary: INotebookEventLibraryConstructor
 }
 
 /**
