@@ -136,6 +136,9 @@ export class NotebookState {
 
                 (nbFormatNotebook.cells[index] as any) = { id: this._notebook.widgets[index].model.id };
             }
+            else {
+                nbFormatNotebook.cells[index]['id'] = this._notebook.widgets[index].model.id;
+            }
         }
 
         for (let index = 0; index < this._notebook.widgets.length; index++) {
