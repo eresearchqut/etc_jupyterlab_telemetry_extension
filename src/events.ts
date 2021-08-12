@@ -22,6 +22,7 @@ import {
 } from "@jupyterlab/docregistry";
 
 import { NotebookState } from "./notebook_state"
+
 import { ConfigSupplicant } from "./config_supplicant";
 
 export interface ICellMeta {
