@@ -77,6 +77,13 @@
   ],
   "styleModule": "style/index.js",
   "jupyterlab": {
+    "sharedPackages": {
+      "@educational-technology-collective/etc_jupyterlab_notebook_state": {
+        "bundled": false,
+        "singleton": true,
+        "strictVersion": true
+      }
+    },
     "discovery": {
       "server": {
         "managers": [
