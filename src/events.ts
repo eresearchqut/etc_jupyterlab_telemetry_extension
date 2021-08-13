@@ -5,7 +5,10 @@ import {
     NotebookActions
 } from "@jupyterlab/notebook";
 
-import { ISignal, Signal } from '@lumino/signaling';
+import { 
+    ISignal, 
+    Signal 
+} from '@lumino/signaling';
 
 import {
     Cell,
@@ -21,11 +24,12 @@ import {
     DocumentRegistry
 } from "@jupyterlab/docregistry";
 
-import { NotebookState } from "./notebook_state"
+import { IMessage, MessageType } from "@jupyterlab/services/lib/kernel/messages";
+
+import {ETCJupyterLabNotebookState as NotebookState} from "@educational-technology-collective/etc_jupyterlab_notebook_state";
 
 import { ConfigSupplicant } from "./config_supplicant";
-import { IMessage } from "@jupyterlab/services/lib/kernel/messages";
-import { MessageType } from "@jupyterlab/services/lib/kernel/messages";
+
 
 export interface ICellMeta {
     index: number;
@@ -506,7 +510,6 @@ export class CellErrorEvent extends ConfigSupplicant {
 
     private _cellErrored: Signal<CellErrorEvent, any> = new Signal(this);
     private _notebookPanel: NotebookPanel;
-    private _notebook: Notebook;
     private _notebookState: NotebookState;
 
 
@@ -518,7 +521,6 @@ export class CellErrorEvent extends ConfigSupplicant {
 
         this._notebookState = notebookState;
         this._notebookPanel = notebookPanel;
-        this._notebook = notebookPanel.content;
 
         notebookPanel.disposed.connect(this.dispose, this);
     }
