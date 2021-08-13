@@ -113,6 +113,5 @@ dmypy.json
 
 .github
 .ideas
-Untitled.ipynb
+Untitled*
 .vscode
-yarn.lock

@@ -24,6 +24,8 @@ import {
 import { NotebookState } from "./notebook_state"
 
 import { ConfigSupplicant } from "./config_supplicant";
+import { IMessage } from "@jupyterlab/services/lib/kernel/messages";
+import { MessageType } from "@jupyterlab/services/lib/kernel/messages";
 
 export interface ICellMeta {
     index: number;
@@ -497,5 +499,67 @@ export class CellRemoveEvent extends ConfigSupplicant {
 
     get cellRemoved(): ISignal<CellRemoveEvent, any> {
         return this._cellRemoved
+    }
+}
+
+export class CellErrorEvent extends ConfigSupplicant {
+
+    private _cellErrored: Signal<CellErrorEvent, any> = new Signal(this);
+    private _notebookPanel: NotebookPanel;
+    private _notebook: Notebook;
+    private _notebookState: NotebookState;
+
+
+    constructor({ notebookState, notebookPanel, config }: INotebookEventOptions) {
+        super({
+            paths: ["mentoracademy.org/schemas/events/1.0.0/CellErrorEvent", "enable"],
+            config
+        });
+
+        this._notebookState = notebookState;
+        this._notebookPanel = notebookPanel;
+        this._notebook = notebookPanel.content;
+
+        notebookPanel.disposed.connect(this.dispose, this);
+    }
+
+    dispose() {
+        Signal.disconnectAll(this);
+    }
+
+    private event(_: any, args: IMessage<MessageType>): void {
+
+        if (args.header.msg_type == "error") {
+
+            let cells = [
+                {
+                    id: this._notebookPanel.content.activeCell?.model.id,
+                    index: this._notebookPanel.content.activeCellIndex
+                }
+            ]
+
+            let notebookState = this._notebookState.getNotebookState();
+
+            this._cellErrored.emit({
+                event_name: "cell_errored",
+                cells: cells,
+                notebook: notebookState.notebook,
+                session_id: notebookState.session_id,
+                seq: notebookState.seq,
+                notebook_path: this._notebookPanel.context.path
+            });
+        }
+    }
+
+    public enable(): void {
+        this._notebookPanel.sessionContext.iopubMessage.connect(this.event, this);
+    }
+
+    public disable(): void {
+        this._notebookPanel.sessionContext.iopubMessage.disconnect(this.event, this);
+    }
+
+    get cellErrored(): ISignal<CellErrorEvent, any> {
+        return this._cellErrored
     }
 }
