@@ -49,7 +49,7 @@ setup_args = dict(
     packages=setuptools.find_packages(),
     install_requires=[
         "jupyter_server>=1.6,<2",
-        "etc_jupyterlab_notebook_state>=1.0.0,<2"
+        "etc_jupyterlab_notebook_state>=2.0.0,<3"
     ],
     zip_safe=False,
     include_package_data=True,
