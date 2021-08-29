@@ -37,12 +37,19 @@ const PLUGIN_ID = '@educational-technology-collective/etc_jupyterlab_telemetry_e
 export const IETCJupyterLabTelemetryLibraryFactory = new Token<IETCJupyterLabTelemetryLibraryFactory>(PLUGIN_ID);
 
 export interface IETCJupyterLabTelemetryLibraryFactory {
-  create({ notebookPanel }: { notebookPanel: NotebookPanel }): ETCJupyterLabTelemetryLibrary;
+
+  create(
+    { notebookPanel, notebookState }: 
+    { notebookPanel: NotebookPanel, notebookState: ETCJupyterLabNotebookState }
+    ): ETCJupyterLabTelemetryLibrary;
 }
 
 class ETCJupyterLabTelemetryLibraryFactory implements IETCJupyterLabTelemetryLibraryFactory {
 
-  create({ notebookPanel, notebookState }: { notebookPanel: NotebookPanel, notebookState: ETCJupyterLabNotebookState }): ETCJupyterLabTelemetryLibrary {
+  create(
+    { notebookPanel, notebookState }: 
+    { notebookPanel: NotebookPanel, notebookState: ETCJupyterLabNotebookState }
+    ): ETCJupyterLabTelemetryLibrary {
     return new ETCJupyterLabTelemetryLibrary({ notebookPanel, notebookState });
   }
 }
