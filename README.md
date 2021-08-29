@@ -238,29 +238,34 @@ The extension provides a service identified by the IETCJupyterLabTelemetry token
 The Signals can be connected to any handler that you choose.  The content of the messages can be filtered according to your needs.
 
 ```js
+import {
+  JupyterFrontEnd,
+  JupyterFrontEndPlugin
+} from '@jupyterlab/application';
+
 import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 
 import {
-  IETCJupyterLabTelemetry,
-  NotebookSaveEvent,
-  CellExecutionEvent,
-  NotebookScrollEvent,
-  ActiveCellChangeEvent,
-  NotebookOpenEvent,
-  CellAddEvent,
-  CellRemoveEvent
+  IETCJupyterLabTelemetryLibraryConstructor
 } from "@educational-technology-collective/etc_jupyterlab_telemetry_extension";
+
+import { requestAPI } from './handler';
+
+import {
+  IETCJupyterLabNotebookState as INotebookState
+} from "@educational-technology-collective/etc_jupyterlab_notebook_state";
 
 PLUGIN_ID = "the_name_of_the_plugin"
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: PLUGIN_ID,
   autoStart: true,
-  requires: [INotebookTracker, IETCJupyterLabTelemetry],
+  requires: [INotebookTracker, IETCJupyterLabTelemetryLibraryConstructor, INotebookState],
   activate: (
-    app: JupyterFrontEnd, 
-    notebookTracker: INotebookTracker, 
-    etcJupyterLabTelemetry: IETCJupyterLabTelemetry
+    app: JupyterFrontEnd,
+    notebookTracker: INotebookTracker,
+    ETCJupyterLabTelemetryLibrary: IETCJupyterLabTelemetryLibraryConstructor,
+    NotebookState: INotebookState
     ) => {
 
     notebookTracker.widgetAdded.connect(async (sender: INotebookTracker, notebookPanel: NotebookPanel) => {
@@ -268,15 +273,19 @@ const plugin: JupyterFrontEndPlugin<void> = {
       await notebookPanel.revealed;
       await notebookPanel.sessionContext.ready;
 
-      let notebookEventLibrary = new etcJupyterLabTelemetry.NotebookEventLibrary({ notebookPanel });
+      let notebookState = new NotebookState({ notebookPanel });
 
-      notebookEventLibrary.notebookOpenEvent.notebookOpened.connect((sender: NotebookOpenEvent, args: any) => console.log(args));
-      notebookEventLibrary.notebookSaveEvent.notebookSaved.connect((sender: NotebookSaveEvent, args: any) => console.log(args));
-      notebookEventLibrary.activeCellChangeEvent.activeCellChanged.connect((sender: ActiveCellChangeEvent, args: any) => console.log(args));
-      notebookEventLibrary.cellAddEvent.cellAdded.connect((sender: CellAddEvent, args: any) => console.log(args));
-      notebookEventLibrary.cellRemoveEvent.cellRemoved.connect((sender: CellRemoveEvent, args: any) => console.log(args));
-      notebookEventLibrary.notebookScrollEvent.notebookScrolled.connect((sender: NotebookScrollEvent, args: any) => console.log(args));
-      notebookEventLibrary.cellExecutionEvent.cellExecuted.connect((sender: CellExecutionEvent, args: any) => console.log(args));
+      let etcJupyterLabTelemetryLibrary = new ETCJupyterLabTelemetryLibrary({ notebookPanel, notebookState });
+
+      etcJupyterLabTelemetryLibrary.notebookOpenEvent.notebookOpened.connect((sender: NotebookOpenEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
+      etcJupyterLabTelemetryLibrary.notebookSaveEvent.notebookSaved.connect((sender: NotebookSaveEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
+      etcJupyterLabTelemetryLibrary.activeCellChangeEvent.activeCellChanged.connect((sender: ActiveCellChangeEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
+      etcJupyterLabTelemetryLibrary.cellAddEvent.cellAdded.connect((sender: CellAddEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
+      etcJupyterLabTelemetryLibrary.cellRemoveEvent.cellRemoved.connect((sender: CellRemoveEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
+      etcJupyterLabTelemetryLibrary.notebookScrollEvent.notebookScrolled.connect((sender: NotebookScrollEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
+      etcJupyterLabTelemetryLibrary.cellExecutionEvent.cellExecuted.connect((sender: CellExecutionEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
+      etcJupyterLabTelemetryLibrary.cellErrorEvent.cellErrored.connect((sender: CellErrorEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
+
     });
 
   }

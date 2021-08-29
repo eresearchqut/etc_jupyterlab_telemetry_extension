@@ -5,8 +5,8 @@ import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 import { Token } from '@lumino/coreutils';
 
 import {
-  IETCJupyterLabNotebookState as INotebookState,
-  ETCJupyterLabNotebookState as NotebookState
+  IETCJupyterLabNotebookStateFactory,
+  ETCJupyterLabNotebookState
 } from "@educational-technology-collective/etc_jupyterlab_notebook_state";
 
 import {
@@ -34,15 +34,17 @@ import { requestAPI } from "./handler";
 
 const PLUGIN_ID = '@educational-technology-collective/etc_jupyterlab_telemetry_extension:plugin'
 
-export const IETCJupyterLabTelemetryLibraryConstructor = new Token<IETCJupyterLabTelemetryLibraryConstructor>(PLUGIN_ID);
+export const IETCJupyterLabTelemetryLibraryFactory = new Token<IETCJupyterLabTelemetryLibraryFactory>(PLUGIN_ID);
 
-export interface IETCJupyterLabTelemetryLibraryConstructor {
-  new(
-    { notebookPanel, notebookState }:
-      {
-        notebookPanel: NotebookPanel,
-        notebookState: NotebookState
-      }): ETCJupyterLabTelemetryLibrary
+export interface IETCJupyterLabTelemetryLibraryFactory {
+  create({ notebookPanel }: { notebookPanel: NotebookPanel }): ETCJupyterLabTelemetryLibrary;
+}
+
+class ETCJupyterLabTelemetryLibraryFactory implements IETCJupyterLabTelemetryLibraryFactory {
+
+  create({ notebookPanel, notebookState }: { notebookPanel: NotebookPanel, notebookState: ETCJupyterLabNotebookState }): ETCJupyterLabTelemetryLibrary {
+    return new ETCJupyterLabTelemetryLibrary({ notebookPanel, notebookState });
+  }
 }
 
 export class ETCJupyterLabTelemetryLibrary {
@@ -63,7 +65,7 @@ export class ETCJupyterLabTelemetryLibrary {
     notebookState
   }: {
     notebookPanel: NotebookPanel,
-    notebookState: NotebookState
+    notebookState: ETCJupyterLabNotebookState
   }) {
 
 
@@ -120,16 +122,16 @@ export class ETCJupyterLabTelemetryLibrary {
 /**
  * Initialization data for the @educational-technology-collective/etc_jupyterlab_telemetry_extension extension.
  */
-const plugin: JupyterFrontEndPlugin<IETCJupyterLabTelemetryLibraryConstructor> = {
+const plugin: JupyterFrontEndPlugin<IETCJupyterLabTelemetryLibraryFactory> = {
   id: PLUGIN_ID,
   autoStart: true,
-  provides: IETCJupyterLabTelemetryLibraryConstructor,
-  requires: [INotebookTracker, INotebookState],
+  provides: IETCJupyterLabTelemetryLibraryFactory,
+  requires: [INotebookTracker, IETCJupyterLabNotebookStateFactory],
   activate: async (
     app: JupyterFrontEnd,
     notebookTracker: INotebookTracker,
-    NotebookState: INotebookState
-  ): Promise<IETCJupyterLabTelemetryLibraryConstructor> => {
+    etcJupyterLabNotebookStateFactory: IETCJupyterLabNotebookStateFactory
+  ): Promise<IETCJupyterLabTelemetryLibraryFactory> => {
     console.log('JupyterLab extension @educational-technology-collective/etc_jupyterlab_telemetry_extension is activated!');
 
     let config = null;
@@ -149,7 +151,7 @@ const plugin: JupyterFrontEndPlugin<IETCJupyterLabTelemetryLibraryConstructor> =
     //   await notebookPanel.revealed;
     //   await notebookPanel.sessionContext.ready;
 
-    //   let notebookState = new NotebookState({ notebookPanel });
+    //   let notebookState = etcJupyterLabNotebookStateFactory.create({ notebookPanel });
 
     //   let etcJupyterLabTelemetryLibrary = new ETCJupyterLabTelemetryLibrary({ notebookPanel, notebookState });
 
@@ -164,7 +166,7 @@ const plugin: JupyterFrontEndPlugin<IETCJupyterLabTelemetryLibraryConstructor> =
     // });
     // // TEST
 
-    return ETCJupyterLabTelemetryLibrary;
+    return new ETCJupyterLabTelemetryLibraryFactory();
   }
 };
 
