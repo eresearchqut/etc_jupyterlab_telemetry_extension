@@ -19,5 +19,8 @@
     },
     "mentoracademy.org/schemas/events/1.0.0/ActiveCellChangeEvent": {
         "enable": true
+    },
+    "mentoracademy.org/schemas/events/1.0.0/CellErrorEvent": {
+        "enable": true
     }
 }

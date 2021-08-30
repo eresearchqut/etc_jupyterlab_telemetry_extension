@@ -2,27 +2,30 @@
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/educational-technology-collective/etc_jupyterlab_telemetry_extension/main?urlpath=lab)
 
-This extension provides a JupyterLab service named IETCJupyterLabTelemetry that exposes a NotebookEventLibrary that has events that emit Signals associated with user actions in the Notebook.  The IETCJupyterLabTelemetry Token represents a service that can be consumed by a JupyterLab plugin similar to core services: [Core Tokens](https://jupyterlab.readthedocs.io/en/stable/extension/extension_points.html#core-tokens).  See the [Usage](#usage) section for instructions on how to consume the service.
+This extension provides a JupyterLab service, identified by the `IETCJupyterLabTelemetryLibraryFactory` token, that can be used to construct a `ETCJupyterLabTelemetryLibrary` instance that exposes Signals associated with user actions in the Notebook.  
 
-The following events are emitted by the events in the NotebookEventLibrary:
+The `IETCJupyterLabTelemetryLibraryFactory` Token represents a service that can be consumed by a JupyterLab plugin similar to core services: [Core Tokens](https://jupyterlab.readthedocs.io/en/stable/extension/extension_points.html#core-tokens).  See the [Usage](#usage) section for instructions on how to consume the service.
+
+The following user actions are emited from the `ETCJupyterLabTelemetryLibrary` as a Signal:
 
 * Active Cell Changed
 * Cell Added
 * Cell Executed
+* Cell Errored
 * Cell Removed
 * Notebook Opened
 * Notebook Saved
 * Notebook Scrolled
 
-Each of these events is exposed as a Signal on the an event of an instance of the NotebookEventLibrary.  The consumer plugin can attach a handler to the Signal in order to log the event message.
+The consumer plugin can attach a handler to the Signal in order to log the event message.
 
 ## Events
 
-Each event message will contain a list of cells relevant to each event.  See the [Relevant Cells](#relevant-cells) section for details.  Each event will also contain a JSON representation of the Notebook in its present state.  The notebook JSON object contains a list of notebook cell objects.  A notebook cell object will contain only the cell id if the cell content or output hasn't changed since the last event.
+Each event message will contain a list of cells relevant to each event.  See the [Relevant Cells](#relevant-cells) section for details.  Each event contains an *incremental* representation of the Notebook.  By providing incremental representations of the Notebook each message will requires less storage.  
 
-The rationale for recording only the cell id when the cell contents have not changed sense a prior message is that it saves storage space.  This approach allows for messages to be reconstructed at a later time by using the cell contents contained in previously logged messages i.e., the cell IDs are used in order to obtain the contents of the cell from a previously logged cell.
+Notebook cells will only contain the cell ID if the cell contents hasn't changed since the last event.  This approach allows for messages to be reconstructed at a later time by using the cell contents contained in previously logged messages i.e., the cell IDs are used in order to obtain the contents of the cell from a previously logged cell.
 
-Please note that in order to reconstruct messages all *enabled* events must be logged.
+Please note that in order to reconstruct messages all *enabled* events must be logged.  Please see the [Configuration](#configuration) for details on how toggle events.
 
 ## Event Message Schema
 
@@ -218,6 +221,8 @@ For each event the top level `cells` property in the logged message will contain
   * The cell list contains the IDs of the added cells.
 * Cell Executed
   * The cell list contains the ID of the executed cell.
+* Cell Errored
+  * The cell list contains the ID of the cell that produces the error.
 * Cell Removed
   * The cell list contains the IDs of the removed cells.
 * Notebook Opened
@@ -233,7 +238,7 @@ Install the extension according to the installation instructions.
 
 Once the extension is installed a plugin can consume the service by including it in its `requires` list.  
 
-The extension provides a service identified by the IETCJupyterLabTelemetry token.  In the following example, the `consumer` plugin consumes the Token provided by the etc_jupyterlab_telemetry_extension extension.  The NotebookEventLibrary exposed by the IETCJupyterLabTelemetry service is then instantiated with a NotebookPanel.  The Signals of the events in the new NotebookEventLibrary are then connected to the `console.log` method, which will log the events to the console.
+The extension provides a service identified by the IETCJupyterLabTelemetryLibraryFactory token.  In the following example, the `consumer` plugin consumes the Token provided by the etc_jupyterlab_telemetry_extension extension.  The ETCJupyterLabTelemetryLibraryFactory is used in order to instantiate a ETCJupyterLabTelemetryLibrary.  ETCJupyterLabTelemetryLibrary contains Signals that are connected to the `console.log` method, which will log the events to the console.
 
 The Signals can be connected to any handler that you choose.  The content of the messages can be filtered according to your needs.
 
@@ -246,13 +251,11 @@ import {
 import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 
 import {
-  IETCJupyterLabTelemetryLibraryConstructor
+  IETCJupyterLabTelemetryLibraryFactory
 } from "@educational-technology-collective/etc_jupyterlab_telemetry_extension";
 
-import { requestAPI } from './handler';
-
 import {
-  IETCJupyterLabNotebookState as INotebookState
+  IETCJupyterLabNotebookStateFactory
 } from "@educational-technology-collective/etc_jupyterlab_notebook_state";
 
 PLUGIN_ID = "the_name_of_the_plugin"
@@ -260,12 +263,12 @@ PLUGIN_ID = "the_name_of_the_plugin"
 const plugin: JupyterFrontEndPlugin<void> = {
   id: PLUGIN_ID,
   autoStart: true,
-  requires: [INotebookTracker, IETCJupyterLabTelemetryLibraryConstructor, INotebookState],
+  requires: [INotebookTracker, IETCJupyterLabNotebookStateFactory, IETCJupyterLabTelemetryLibraryFactory],
   activate: (
     app: JupyterFrontEnd,
     notebookTracker: INotebookTracker,
-    ETCJupyterLabTelemetryLibrary: IETCJupyterLabTelemetryLibraryConstructor,
-    NotebookState: INotebookState
+    etcJupyterLabNotebookStateFactory: IETCJupyterLabNotebookStateFactory,
+    etcJupyterLabTelemetryLibraryFactory: IETCJupyterLabTelemetryLibraryFactory
     ) => {
 
     notebookTracker.widgetAdded.connect(async (sender: INotebookTracker, notebookPanel: NotebookPanel) => {
@@ -273,9 +276,12 @@ const plugin: JupyterFrontEndPlugin<void> = {
       await notebookPanel.revealed;
       await notebookPanel.sessionContext.ready;
 
-      let notebookState = new NotebookState({ notebookPanel });
+      let notebookState = etcJupyterLabNotebookStateFactory.create({ notebookPanel });
 
-      let etcJupyterLabTelemetryLibrary = new ETCJupyterLabTelemetryLibrary({ notebookPanel, notebookState });
+      let etcJupyterLabTelemetryLibrary = etcJupyterLabTelemetryLibraryFactory.create({
+        notebookPanel,
+        notebookState
+      });
 
       etcJupyterLabTelemetryLibrary.notebookOpenEvent.notebookOpened.connect((sender: NotebookOpenEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
       etcJupyterLabTelemetryLibrary.notebookSaveEvent.notebookSaved.connect((sender: NotebookSaveEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
@@ -290,6 +296,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
   }
 };
+
+
 ```
 
 ## Configuration
@@ -301,35 +309,34 @@ The configuration file may be placed in any of the Jupyter Server configuration 
 This is an example of a valid JSON configuration file:
 ```json
 {
-  "mentoracademy.org/schemas/events/1.0.0/NotebookSaveEvent": {
-      "enable": true
-  },
-  "mentoracademy.org/schemas/events/1.0.0/NotebookOpenEvent": {
-      "enable": true
-  },
-  "mentoracademy.org/schemas/events/1.0.0/CellRemoveEvent": {
-      "enable": true
-  },
-  "mentoracademy.org/schemas/events/1.0.0/CellAddEvent": {
-      "enable": true
-  },
-  "mentoracademy.org/schemas/events/1.0.0/CellExecutionEvent": {
-      "enable": true
-  },
-  "mentoracademy.org/schemas/events/1.0.0/NotebookScrollEvent": {
-      "enable": true
-  },
-  "mentoracademy.org/schemas/events/1.0.0/ActiveCellChangeEvent": {
-      "enable": true
-  }
+    "mentoracademy.org/schemas/events/1.0.0/NotebookSaveEvent": {
+        "enable": true
+    },
+    "mentoracademy.org/schemas/events/1.0.0/NotebookOpenEvent": {
+        "enable": true
+    },
+    "mentoracademy.org/schemas/events/1.0.0/CellRemoveEvent": {
+        "enable": true
+    },
+    "mentoracademy.org/schemas/events/1.0.0/CellAddEvent": {
+        "enable": true
+    },
+    "mentoracademy.org/schemas/events/1.0.0/CellExecutionEvent": {
+        "enable": true
+    },
+    "mentoracademy.org/schemas/events/1.0.0/NotebookScrollEvent": {
+        "enable": true
+    },
+    "mentoracademy.org/schemas/events/1.0.0/ActiveCellChangeEvent": {
+        "enable": true
+    },
+    "mentoracademy.org/schemas/events/1.0.0/CellErrorEvent": {
+        "enable": true
+    }
 }
 ```
 
 An event can be disabled by setting its `enable` property to `false`.  The change will take effect next time you start JupyterLab.
-
-## Example
-
-The [ETC JupyterLab Telemetry Example](https://github.com/educational-technology-collective/etc_jupyterlab_telemetry_example) repository demostrates how to consume this extension and hook up its events to a console.log handler.
 
 ## Requirements
 
