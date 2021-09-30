@@ -32,6 +32,8 @@ export {
 
 import { requestAPI } from "./handler";
 
+import { AWSAPIGatewayWrapper } from "@educational-technology-collective/etc_http_aws_api_gateway_wrapper";
+
 const PLUGIN_ID = '@educational-technology-collective/etc_jupyterlab_telemetry_extension:plugin'
 
 export const IETCJupyterLabTelemetryLibraryFactory = new Token<IETCJupyterLabTelemetryLibraryFactory>(PLUGIN_ID);
@@ -126,6 +128,29 @@ export class ETCJupyterLabTelemetryLibrary {
   }
 }
 
+let awsAPIGatewayWrapper: AWSAPIGatewayWrapper = new AWSAPIGatewayWrapper(
+  {
+      url: "https://telemetry.qutanalytics.io",
+      bucket: "jupyterhub-telemetry",
+      path: "jupyter-oncampus",
+      retry: 1000,
+      errorHandler: console.error
+  }
+);
+
+async function sendTelemetry(args: object) {
+  try {
+    // console.log(args)
+    let timestamp: number = Date.now();
+    await awsAPIGatewayWrapper.requestAsync([args, timestamp]);
+    // let response: Response = await awsAPIGatewayWrapper.requestAsync([args, timestamp]);
+    // console.log(response)
+  }
+  catch (e) {
+    console.error(e);
+  }
+}
+
 /**
  * Initialization data for the @educational-technology-collective/etc_jupyterlab_telemetry_extension extension.
  */
@@ -139,8 +164,6 @@ const plugin: JupyterFrontEndPlugin<IETCJupyterLabTelemetryLibraryFactory> = {
     notebookTracker: INotebookTracker,
     etcJupyterLabNotebookStateFactory: IETCJupyterLabNotebookStateFactory
   ): Promise<IETCJupyterLabTelemetryLibraryFactory> => {
-    console.log('JupyterLab extension @educational-technology-collective/etc_jupyterlab_telemetry_extension is activated!');
-
     let config = null;
 
     try {
@@ -152,26 +175,22 @@ const plugin: JupyterFrontEndPlugin<IETCJupyterLabTelemetryLibraryFactory> = {
 
     ETCJupyterLabTelemetryLibrary._config = config;
 
-    // // TEST
-    // notebookTracker.widgetAdded.connect(async (sender: INotebookTracker, notebookPanel: NotebookPanel) => {
+    notebookTracker.widgetAdded.connect(async (sender: INotebookTracker, notebookPanel: NotebookPanel) => {
+      await notebookPanel.revealed;
+      await notebookPanel.sessionContext.ready;
 
-    //   await notebookPanel.revealed;
-    //   await notebookPanel.sessionContext.ready;
+      let notebookState = etcJupyterLabNotebookStateFactory.create({ notebookPanel });
+      let etcJupyterLabTelemetryLibrary = new ETCJupyterLabTelemetryLibrary({ notebookPanel, notebookState });
 
-    //   let notebookState = etcJupyterLabNotebookStateFactory.create({ notebookPanel });
-
-    //   let etcJupyterLabTelemetryLibrary = new ETCJupyterLabTelemetryLibrary({ notebookPanel, notebookState });
-
-    //   etcJupyterLabTelemetryLibrary.notebookOpenEvent.notebookOpened.connect((sender: NotebookOpenEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
-    //   etcJupyterLabTelemetryLibrary.notebookSaveEvent.notebookSaved.connect((sender: NotebookSaveEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args));
-    //   etcJupyterLabTelemetryLibrary.activeCellChangeEvent.activeCellChanged.connect((sender: ActiveCellChangeEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
-    //   etcJupyterLabTelemetryLibrary.cellAddEvent.cellAdded.connect((sender: CellAddEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
-    //   etcJupyterLabTelemetryLibrary.cellRemoveEvent.cellRemoved.connect((sender: CellRemoveEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
-    //   etcJupyterLabTelemetryLibrary.notebookScrollEvent.notebookScrolled.connect((sender: NotebookScrollEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
-    //   etcJupyterLabTelemetryLibrary.cellExecutionEvent.cellExecuted.connect((sender: CellExecutionEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
-    //   etcJupyterLabTelemetryLibrary.cellErrorEvent.cellErrored.connect((sender: CellErrorEvent, args: any) => console.log("etc_jupyterlab_telemetry_extension", args))
-    // });
-    // // TEST
+      etcJupyterLabTelemetryLibrary.notebookOpenEvent.notebookOpened.connect((sender: NotebookOpenEvent, args: any) => sendTelemetry(args));
+      etcJupyterLabTelemetryLibrary.notebookSaveEvent.notebookSaved.connect((sender: NotebookSaveEvent, args: any) => sendTelemetry(args));
+      etcJupyterLabTelemetryLibrary.activeCellChangeEvent.activeCellChanged.connect((sender: ActiveCellChangeEvent, args: any) => sendTelemetry(args))
+      etcJupyterLabTelemetryLibrary.cellAddEvent.cellAdded.connect((sender: CellAddEvent, args: any) => sendTelemetry(args))
+      etcJupyterLabTelemetryLibrary.cellRemoveEvent.cellRemoved.connect((sender: CellRemoveEvent, args: any) => sendTelemetry(args))
+      etcJupyterLabTelemetryLibrary.notebookScrollEvent.notebookScrolled.connect((sender: NotebookScrollEvent, args: any) => sendTelemetry(args))
+      etcJupyterLabTelemetryLibrary.cellExecutionEvent.cellExecuted.connect((sender: CellExecutionEvent, args: any) => sendTelemetry(args))
+      etcJupyterLabTelemetryLibrary.cellErrorEvent.cellErrored.connect((sender: CellErrorEvent, args: any) => sendTelemetry(args))
+    });
 
     return new ETCJupyterLabTelemetryLibraryFactory();
   }
