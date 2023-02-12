@@ -75,6 +75,11 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.3.tgz#90420f9f9c6d3987f176a19a7d8e764271a2f55d"
   integrity sha512-Fxt+AfXgjMoin2maPIYzFZnQjAXjAL0PHscM5pRTtatFqB+vZxAM9tLp2Optnuw3QOQC40jTNeGYFOMvyf7v9g==
 
+"@educational-technology-collective/etc_http_aws_api_gateway_wrapper@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@educational-technology-collective/etc_http_aws_api_gateway_wrapper/-/etc_http_aws_api_gateway_wrapper-3.0.0.tgz#1622c428d5946bd5c94415566f390719340c6126"
+  integrity sha512-IREY14TmT0sNgmfj/3N9qrmwdvp65bHaLfQvMQS9tGjaj1pU4NP1mgshgjFHHW9hcEMBZ2Ad1anhItosM/1n3g==
+
 "@educational-technology-collective/etc_jupyterlab_notebook_state@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@educational-technology-collective/etc_jupyterlab_notebook_state/-/etc_jupyterlab_notebook_state-2.0.1.tgz#0940e73f694a1384f0913699ffad5c0a962daf6b"
@@ -4513,9 +4518,9 @@ qs@6.7.0:
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
 qs@~6.5.2:
-  version "6.5.2"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
-  integrity sha512-N5ZAX4/LxJmF+7wN74pUD6qAh9/wnvdQcjq9TZjevvXzSUo7bfmw91saqMjzGS2xq91/odN2dW/WOl7qQHNDGA==
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.3.tgz#3aeeffc91967ef6e35c0e488ef46fb296ab76aad"
+  integrity sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==
 
 querystring@0.2.0:
   version "0.2.0"
